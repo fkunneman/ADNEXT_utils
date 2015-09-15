@@ -15,11 +15,11 @@ class Linewriter:
             chunks = gen_functions.make_chunks(self.lines, nc = num_chunks)
         else:
             chunks = [self.lines]
-        book = xlwt.Workbook()
-        algn1 = xlwt.Alignment()
-        algn1.wrap = 1
+        book = xlwt.Workbook(encoding = 'utf-8')
+        #algn1 = xlwt.Alignment()
+        #algn1.wrap = 1
         style = xlwt.XFStyle()
-        style.alignment = algn1
+        #style.alignment = algn1
         for sheetno, chunk in enumerate(chunks):
             tabname = 'sheet_' + str(sheetno)
             tab = book.add_sheet(tabname)
@@ -32,6 +32,12 @@ class Linewriter:
                         url = 'HYPERLINK(\"' + column + '\"; \"' + column + '\")'
                         tab.write(i, j, xlwt.Formula(url))
                     else:
+#                        style = xlwt.XFStyle()
+#                        style.alignment = algn1
                         style.num_format_str = header_style[headers[j]]
-                        tab.write(i, j, column, style)
+                        try:
+                            print(j, column, headers[j], style.num_format_str)
+                            tab.write(i, j, column, style)
+                        except:
+                            continue
         book.save(outfile)
