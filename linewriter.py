@@ -46,4 +46,4 @@ class Linewriter:
     def write_txt(self, outfile, delimiter = '\t'):
         with open(outfile, 'w', encoding = 'utf-8') as out:
             for line in self.lines:
-                out.write(delimiter.join(line) + '\n')
+                out.write(delimiter.join([str(x) for x in line]) + '\n')
