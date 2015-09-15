@@ -35,3 +35,8 @@ class Linewriter:
                         style.num_format_str = header_style[headers[j]]
                         tab.write(i, j, column, style)
         book.save(outfile)
+
+    def write_txt(self, outfile, delimiter = '\t'):
+        for line in self.lines:
+            outfile.write(delimiter.join(line) + '\n')
+
