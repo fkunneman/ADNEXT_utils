@@ -44,5 +44,6 @@ class Linewriter:
         book.save(outfile)
 
     def write_txt(self, outfile, delimiter = '\t'):
-        for line in self.lines:
-            outfile.write(delimiter.join(line) + '\n')
+        with open(outfile, 'w', encoding = 'utf-8') as out:
+            for line in self.lines:
+                out.write(delimiter.join(line) + '\n')
