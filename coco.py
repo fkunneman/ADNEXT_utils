@@ -35,24 +35,26 @@ class Coco:
         self.classencoder.save(classfile)
 
         # Encode corpus data
-        corpusfile = tmpdir + 'ngrams.colibri.dat'
+        corpusfile = self.tmpdir + 'ngrams.colibri.dat'
         self.classencoder.encodefile(self.ngram_file, corpusfile)
 
         # Load class decoder
         self.classdecoder = colibricore.ClassDecoder(classfile) 
 
         # Train model
-        options = colibricore.PatternModelOptions(mintokens = min_tokens, maxlength = max_ngrams, doreverseindex=True)
+        options = colibricore.PatternModelOptions(mintokens = min_tokens, maxlength = max_ngrams, doreverseindex = True)
         self.model = colibricore.IndexedPatternModel()
         self.model.train(corpusfile, options)
 
     def match(self, keys):
         key_matches = defaultdict(list)
         for key in keys:
+#            print(key)
             querypattern = self.classencoder.buildpattern(key)
             if querypattern in self.model:
-                print(model[querypattern])
-                print(dir(model[querypattern]))
+                for x in self.model.getdata(querypattern):
+                    print(x)
+                print(len(x))
                 quit()
             else:
                 key_matches[key] = [0,[]]
