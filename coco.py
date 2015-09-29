@@ -49,15 +49,16 @@ class Coco:
     def match(self, keys):
         key_matches = defaultdict(list)
         for key in keys:
-#            print(key)
             querypattern = self.classencoder.buildpattern(key)
             if querypattern in self.model:
-                for x in self.model.getdata(querypattern):
-                    print(x)
-                print(len(x))
+                match = self.model.getdata(querypattern)
+                matches = []
+                for x in match:
+                    matches.append(x[0] - 1)
+                count = len(match)
+                print(count)
+                key_matches[key] = [count, matches]
                 quit()
             else:
                 key_matches[key] = [0,[]]
         return key_matches
-
-
