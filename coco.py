@@ -56,9 +56,7 @@ class Coco:
                 for x in match:
                     matches.append(x[0] - 1)
                 count = len(match)
-                print(count)
                 key_matches[key] = [count, matches]
-                quit()
             else:
                 key_matches[key] = [0,[]]
         return key_matches
