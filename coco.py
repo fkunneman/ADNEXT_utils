@@ -58,6 +58,9 @@ class Coco:
         options = colibricore.PatternModelOptions(mintokens = min_tokens, maxlength = max_ngrams, doreverseindex = True)
         self.model = colibricore.IndexedPatternModel()
         self.model.train(corpusfile, options)
+        #print(dir(self.model))
+        #self.model.printmodel()
+        print('writing to file')
         self.model.write(self.tmpdir + 'ngrams.IndexedPatternModel')
 
     def match(self, keys):
