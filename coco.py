@@ -18,25 +18,38 @@ class Coco:
             line = line.replace(':',' :')
             self.lines[i] = line
 
-    def set_file(self, ngramfile = False):
-        if ngramfile:
-            self.ngramfile = ngramfile
-        else:
-            self.ngram_file = self.tmpdir + 'ngrams.txt'
-            with open(self.ngram_file, 'w', encoding = 'utf-8') as txt:
-                for line in self.lines:
-                    txt.write(line + '\n')            
+    def set_file(self):
+        self.ngram_file = self.tmpdir + 'ngrams.txt'
+        with open(self.ngram_file, 'w', encoding = 'utf-8') as txt:
+            for line in self.lines:
+                txt.write(line + '\n')
 
-    def model(self, min_tokens, max_ngrams):
-        classfile = self.tmpdir + 'ngrams.colibri.cls'
+    def load_file(self, filename):
+        self.ngram_file = filename
+    
+    def load_classencoder(self, classencoder):
+        self.classencoder = colibricore.ClassEncoder(classencoder)
+
+    def load_classdecoder(self, classfile):
+        self.classdecoder = colibricore.ClassDecoder(classfile)
+
+    def load_model(self, modelfile):
+        self.model = colibricore.IndexedPatternModel(modelfile)
+
+    def model(self, min_tokens, max_ngrams, classfile = False, corpusfile = False):
         # Build class encoder
-        self.classencoder = colibricore.ClassEncoder()
-        self.classencoder.build(self.ngram_file)
-        self.classencoder.save(classfile)
+        if classfile:
+            self.classencoder = colibricore.ClassEncoder(classfile)
+        else:
+            classfile = self.tmpdir + 'ngrams.colibri.cls'
+            self.classencoder = colibricore.ClassEncoder()
+            self.classencoder.build(self.ngram_file)
+            self.classencoder.save(classfile)
 
         # Encode corpus data
-        corpusfile = self.tmpdir + 'ngrams.colibri.dat'
-        self.classencoder.encodefile(self.ngram_file, corpusfile)
+        if not corpusfile:
+            corpusfile = self.tmpdir + 'ngrams.colibri.dat'
+            self.classencoder.encodefile(self.ngram_file, corpusfile)
 
         # Load class decoder
         self.classdecoder = colibricore.ClassDecoder(classfile) 
@@ -45,6 +58,7 @@ class Coco:
         options = colibricore.PatternModelOptions(mintokens = min_tokens, maxlength = max_ngrams, doreverseindex = True)
         self.model = colibricore.IndexedPatternModel()
         self.model.train(corpusfile, options)
+        self.model.write(self.tmpdir + 'ngrams.IndexedPatternModel')
 
     def match(self, keys):
         key_matches = defaultdict(list)
