@@ -36,7 +36,43 @@ class Coco:
     def load_model(self, modelfile):
         self.model = colibricore.IndexedPatternModel(modelfile)
 
-    def model(self, min_tokens, max_ngrams, classfile = False, corpusfile = False):
+    def model_ngramperline(self, ngrams, write = False):
+        # Write txt file
+        ngramperline_file = self.tmpdir + 'ngramperline.txt'
+        with open(ngramperline_file, 'w', encoding = 'utf-8') as ngw:
+            ngw.write('\n'.join(ngrams))
+        # Build class encoder
+        classfile = self.tmpdir + 'ngrams.colibri.cls'
+        self.classencoder = colibricore.ClassEncoder()
+        self.classencoder.processcorpus(ngramperline_file)
+        self.classencoder.processcorpus(self.ngram_file)
+        self.classencoder.buildclasses()
+        self.classencoder.save(classfile)
+
+        # Encode corpus data
+        corpusfile_ngram = self.tmpdir + 'ngramperline.colibri.dat'
+        self.classencoder.encodefile(ngramperline_file, corpusfile_ngram)
+
+        corpusfile_test = self.tmpdir + 'ngrams.colibri.dat'
+        self.classencoder.encodefile(self.ngram_file, corpusfile_test)
+
+        # Load class decoder
+        self.classdecoder = colibricore.ClassDecoder(classfile) 
+
+        # Train model
+        options = colibricore.PatternModelOptions(mintokens = 1, dopatternperline = True)
+        refmodel = colibricore.IndexedPatternModel()
+        refmodel.train(corpusfile_ngram, options)
+
+        # Test model
+        options = colibricore.PatternModelOptions(mintokens = 1)
+        self.model = colibricore.IndexedPatternModel()
+        self.model.train(corpusfile_test, options, refmodel)
+        if write:
+            print('writing to file')
+            self.model.write(self.tmpdir + 'ngrams.IndexedPatternModel_constrained')
+
+    def model(self, min_tokens, max_ngrams, classfile = False, corpusfile = False, write = False):
         # Build class encoder
         if classfile:
             self.classencoder = colibricore.ClassEncoder(classfile)
@@ -56,12 +92,10 @@ class Coco:
 
         # Train model
         options = colibricore.PatternModelOptions(mintokens = min_tokens, maxlength = max_ngrams, doreverseindex = True)
-        self.model = colibricore.IndexedPatternModel()
         self.model.train(corpusfile, options)
-        #print(dir(self.model))
-        #self.model.printmodel()
-        print('writing to file')
-        self.model.write(self.tmpdir + 'ngrams.IndexedPatternModel')
+        if write:
+            print('writing to file')
+            self.model.write(self.tmpdir + 'ngrams.IndexedPatternModel')
 
     def match(self, keys):
         key_matches = defaultdict(list)
