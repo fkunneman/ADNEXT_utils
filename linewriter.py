@@ -30,7 +30,7 @@ class Linewriter:
             for i, line in enumerate(chunk):
                 i += 1
                 for j, column in enumerate(line):
-                    if re.search('^http', str(column)):
+                    if re.search('^http', str(column)) and not ' ' in str(column):
                         url = 'HYPERLINK(\"' + column + '\"; \"' + column + '\")'
                         tab.write(i, j, xlwt.Formula(url))
                     else:
