@@ -16,6 +16,9 @@ class Coco:
             line = line.replace(',',' ,')
             line = line.replace('.',' .')
             line = line.replace(':',' :')
+            line = line.replace(';',' ;')
+            line = line.replace('!',' !')
+            line = line.replace('?',' ?')
             self.lines[i] = line
 
     def set_file(self):
@@ -60,12 +63,12 @@ class Coco:
         self.classdecoder = colibricore.ClassDecoder(classfile) 
 
         # Train model
-        options = colibricore.PatternModelOptions(mintokens = 1, dopatternperline = True)
+        options = colibricore.PatternModelOptions(mintokens = 1, dopatternperline = True, maxlength = 10)
         refmodel = colibricore.IndexedPatternModel()
         refmodel.train(corpusfile_ngram, options)
 
         # Test model
-        options = colibricore.PatternModelOptions(mintokens = 1)
+        options = colibricore.PatternModelOptions(mintokens = 1, maxlength = 10)
         self.model = colibricore.IndexedPatternModel()
         self.model.train(corpusfile_test, options, refmodel)
         if write:
