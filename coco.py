@@ -109,8 +109,5 @@ class Coco:
                 matches = []
                 for x in match:
                     matches.append(x[0] - 1)
-                count = len(match)
-                key_matches[key] = [count, matches]
-            else:
-                key_matches[key] = [0,[]]
+                key_matches[key] = matches
         return key_matches
