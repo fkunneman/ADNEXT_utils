@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import lineconverter
-import codecs
+#import codecs
 import argparse
 import gen_functions
 import re
@@ -48,16 +48,16 @@ args = parser.parse_args()
 delimiter = args.d
 if args.i[-3:] == "xls": 
     sheets = gen_functions.excel2lines(args.i,args.sheets)
-    print "num_sheets",len(sheets)
+    print("num_sheets",len(sheets))
     lines = []
     for sheet in sheets:
         for line in sheet:
             for i in range(len(line)):
                 line[i] = re.sub("\n","",line[i])
             lines.append(line)
-    print "num_lines",len(lines)
+    print("num_lines",len(lines))
 else:
-    infile = codecs.open(args.i,"r","utf-8")
+    infile = open(args.i,"r",encoding = "utf-8")
     lines_raw = infile.readlines()
     infile.close()
     lines = [x.strip().split(delimiter) for x in lines_raw]
@@ -71,7 +71,7 @@ else:
                 del lines[i]
             else:
                 i+=1
-    print "num_lines",len(lines)
+    print("num_lines",len(lines))
 
 actions = args.a
 lineconvert = lineconverter.Lineconverter(lines,args.header)
@@ -110,9 +110,9 @@ if actions:
             lineconvert.add_id()
 
     if "delete" in actions:
-        print "num lines before delete:",len(lineconvert.lines)
+        print("num lines before delete:"),len(lineconvert.lines)
         lineconvert.delete_string([args.s], args.c.pop(0))
-        print "num lines after delete",len(lineconvert.lines)
+        print("num lines after delete"),len(lineconvert.lines)
 
     if "delete_filematch" in actions:
         f = args.filematch[0]
@@ -130,15 +130,15 @@ if actions:
                 tokens = matchline.strip().split(args.d)
                 match = re.sub("\n","",tokens[int(args.filematch[1])])
                 matchlist.append(match)
-        print "num lines before delete:",len(lineconvert.lines)
+        print("num lines before delete:"),len(lineconvert.lines)
         lineconvert.delete_string(matchlist, args.c)
-        print "num lines after delete",len(lineconvert.lines)
+        print("num lines after delete"),len(lineconvert.lines)
 
     if "filter" in actions:
         lineconvert.filter_string_end(args.s,args.c.pop(0))
 
     if "extract" in actions:
-        extractfile = codecs.open(args.s,"r","utf-8")
+        extractfile = open(args.s,"r",encoding = "utf-8")
         matchstrings = [l.strip() for l in extractfile.readlines()]
         extractfile.close()
         #print(args.c)
@@ -193,44 +193,45 @@ if args.excel:
                     style.num_format_str = "general"
                     tab.write(i,j,col,style)
                 else:
-                    if re.search("LINEBREAK",col):
-                        col = col.replace("LINEBREAK","\n")
-                        style.alignment.wrap = 1
+                    # try:
+                    #     if re.search("LINEBREAK",col):
+                    #         col = col.replace("LINEBREAK","\n")
+                    #         style.alignment.wrap = 1
+                    #         tab.write(i,j,col,style)
+                    # else:
+                    try:
+                        col = round(float(col),2)
+                        style.num_format_str = "0.00"
                         tab.write(i,j,col,style)
-                    else:
+                    except:
                         try:
-                            col = round(float(col),2)
-                            style.num_format_str = "0.00"
+                            col = int(col)
+                            style.num_format_str = "0"
                             tab.write(i,j,col,style)
                         except:
                             try:
-                                col = int(col)
-                                style.num_format_str = "0"
+                                col = time_functions.return_datetime(col)
+                                style.num_format_str = "dd-mm-yy"
                                 tab.write(i,j,col,style)
                             except:
-                                try:
-                                    col = time_functions.return_datetime(col)
-                                    style.num_format_str = "dd-mm-yy"
+                                if re.match(r"\d{2}:\d{2}:\d{2}",col):
+                                    style.num_format_str = 'hh:mm:ss'
                                     tab.write(i,j,col,style)
-                                except:
-                                    if re.match(r"\d{2}:\d{2}:\d{2}",col):
-                                        style.num_format_str = 'hh:mm:ss'
-                                        tab.write(i,j,col,style)
+                                else:
+                                    if re.search("https://twitter.com",col):
+                                        ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
+                                        tab.write(i,j, Formula(ucol))
                                     else:
-                                        if re.search("https://twitter.com",col):
-                                            ucol = 'HYPERLINK(\"' + col + "\"; \"" + col + "\")"
-                                            tab.write(i,j, Formula(ucol))
-                                        else:
-                                            style.num_format_str = "general"
-                                            tab.write(i,j,col,style)
+                                        style.num_format_str = "general"
+                                        tab.write(i,j,col,style)
 
     book.save(args.o)
         
 else:
     if args.append:
-        outfile = codecs.open(args.o,"a","utf-8")
+        outfile = open(args.o,"a",encoding = "utf-8")
     else:
-        outfile = codecs.open(args.o,"w","utf-8")
+        outfile = open(args.o,"w",encoding = "utf-8")
     for line in lineconvert.lines:
         outfile.write(delimiter.join(line) + "\n")
     outfile.close()

@@ -38,6 +38,22 @@ def make_chunks(lines,nc=16,dist=False):
         chunks.append(lines[i:])
     return chunks
 
+def cleanup_tweets(tweets, default_length):
+    cleaned_tweets = []
+    for i, x in enumerate(tweets):
+        fields = x.split('\t')
+        if len(fields) == default_length:
+            cleaned_tweets.append(x)
+        else:
+            if len(fields) > default_length:
+                for f in fields[6:]:
+                    fields[5] = fields[5] + ' ' + f
+                cleaned_tweets.append('\t'.join(fields))
+            else: # len(fields) < 6
+                if not i == 0:
+                    cleaned_tweets[-1] = cleaned_tweets[-1] + x
+    return cleaned_tweets
+
 def format_list(columns,size):
     outlist = []
     f = '{0: <' + size + '}'

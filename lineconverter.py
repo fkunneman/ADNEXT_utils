@@ -72,7 +72,7 @@ class Lineconverter():
 					line.append(0)
 			except:
 				print(line,"textcolumn incorrect, quitting")
-				quit()
+				continue
 
 	def add_id(self,start_id = 0):
 		for i,line in enumerate(self.lines):
