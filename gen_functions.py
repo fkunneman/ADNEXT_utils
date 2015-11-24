@@ -40,14 +40,15 @@ def make_chunks(lines,nc=16,dist=False):
 
 def cleanup_tweets(tweets, default_length):
     cleaned_tweets = []
+    last = default_length - 1
     for i, x in enumerate(tweets):
         fields = x.split('\t')
         if len(fields) == default_length:
             cleaned_tweets.append(x)
         else:
             if len(fields) > default_length:
-                for f in fields[6:]:
-                    fields[5] = fields[5] + ' ' + f
+                for f in fields[default_length:]:
+                    fields[last] = fields[last] + ' ' + f
                 cleaned_tweets.append('\t'.join(fields))
             else: # len(fields) < 6
                 if not i == 0:
