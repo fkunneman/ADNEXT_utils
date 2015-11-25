@@ -36,11 +36,9 @@ def return_datetime(date,time = False,minute = False,setting = "eu"):
 def timerel(time1,time2,unit):
     """Return the difference in time in a given time unit between two datetime objects.""" 
     if unit == "day":
-#        print(time1.date(),time2.date())
         day = (time1.date() - time2.date()).days
         if day < 0:
             day = day*-1
- #       print(day)
         return day
     else:
         dif = time1 - time2
@@ -50,20 +48,3 @@ def timerel(time1,time2,unit):
         if unit == "minute":   
             minutes = (int(dif.days) * 1440) + int(dif.seconds / 60)
             return minutes
-
-# def generate_event_time_hash(events,delimiter="\t"):
-#     """Based on an eventfile, generate a dictionary with events as keys and their start/end time as value."""
-#     event_time = {}
-#     eventfile_open = open(events,"r",encoding = "utf-8")
-#     for event in eventfile_open:
-#         tokens = event.strip().split(delimiter)
-#         event_name = tokens[0]
-#         event_date_begin = tokens[1]
-#         event_time_begin = tokens[2]
-#         event_datetime_begin = return_datetime(event_date_begin,event_time_begin)
-#         event_date_end = tokens[3]
-#         event_time_end = tokens[4]
-#         event_datetime_end = return_datetime(event_date_end,event_time_end)
-#         event_time[event_name] = (event_datetime_begin,event_datetime_end)
-#     eventfile_open.close()
-#     return event_time
