@@ -1,9 +1,6 @@
 
-#from __future__ import division
 import re
-#import codecs
 import datetime
-from collections import defaultdict
 
 def return_datetime(date,time = False,minute = False,setting = "eu"):
     """Put a date and time string in the python datetime format."""
@@ -33,7 +30,7 @@ def return_datetime(date,time = False,minute = False,setting = "eu"):
         datetime_obj = datetime.datetime(int(date[0]),int(date[1]),int(date[2]),0,0,0)
     return datetime_obj
 
-def timerel(time1,time2,unit):
+def timerel(time1, time2, unit):
     """Return the difference in time in a given time unit between two datetime objects.""" 
     if unit == "day":
         day = (time1.date() - time2.date()).days
@@ -48,3 +45,33 @@ def timerel(time1,time2,unit):
         if unit == "minute":   
             minutes = (int(dif.days) * 1440) + int(dif.seconds / 60)
             return minutes
+
+def select_tweets_bda(docs, date_index, time_index, during_begin, during_end, setting = 'eu'):
+    """
+    Function to distinguish documents posted before, during and after a timeslot (for example an event)
+
+    Parameters
+    -----
+    docs (list)                             : list of documents, each document is a list of datapoints
+    date_index (int)                        : the index in the document that contains the date of creation, of type datetime.date()
+    time_index (int)                        : the index in the document that contains the time of creation, of type datetime.time()
+    during_begin (datetime.datetime)        : the begin time of the time slot
+    during_end (datetime.datetime)          : the end time of the time slot
+    setting                                 : the format of the document date
+
+    Returns
+    -----
+    before (list)                           : list of documents, posted before the timeslot
+    during (list)                           : list of documents, posted during the timeslot
+    after (list)                            : list of documents, posted after the timeslot    
+    """
+    before, during, after = [], [], []
+    for document in docs:
+        doc_dt = return_datetime(document[date_index], document[time_index], setting = setting)
+        if doc_dt < during_begin:
+            before.append(document)
+        elif doc_dt > during_end:
+            after.append(document)
+        else: # on same day
+            during.append(document)
+    return before, during, after
