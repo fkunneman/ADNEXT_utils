@@ -43,7 +43,7 @@ class Coco:
         # Write txt file
         ngramperline_file = self.tmpdir + 'ngramperline.txt'
         with open(ngramperline_file, 'w', encoding = 'utf-8') as ngw:
-            ngw.write('\n'.join(ngrams))
+            ngw.write('\n'.join(ngrams) + '\n')
         # Build class encoder
         classfile = self.tmpdir + 'ngrams.colibri.cls'
         self.classencoder = colibricore.ClassEncoder()
