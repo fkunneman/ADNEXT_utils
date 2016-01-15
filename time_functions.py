@@ -67,11 +67,14 @@ def select_tweets_bda(docs, date_index, time_index, during_begin, during_end, se
     """
     before, during, after = [], [], []
     for document in docs:
-        doc_dt = return_datetime(document[date_index], document[time_index], setting = setting)
-        if doc_dt < during_begin:
-            before.append(document)
-        elif doc_dt > during_end:
-            after.append(document)
-        else: # on same day
-            during.append(document)
+        try:
+            doc_dt = return_datetime(document[date_index], document[time_index], setting = setting)
+            if doc_dt < during_begin:
+                before.append(document)
+            elif doc_dt > during_end:
+                after.append(document)
+            else: # on same day
+                during.append(document)
+        except:
+            continue
     return before, during, after
