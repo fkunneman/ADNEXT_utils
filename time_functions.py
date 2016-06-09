@@ -2,6 +2,33 @@
 import re
 import datetime
 
+def return_date(chars):
+
+    if re.search('-', chars):
+        parts = chars.split('-')
+    else:
+        parts = chars.split('/')
+    parts = [int(x) for x in parts]
+    if len(parts) == 3:
+        if parts[0] > 1000: #first is a year
+            year = parts[0]
+            month = parts[1]
+            day = parts[2]
+        else parts[2] > 1000:
+            day = parts[0]
+            month = parts[1]
+            year = parts[2] 
+    elif len(parts) == 2:
+        if parts[1] > 12:
+            day = parts[1]
+            month = parts[0]
+        else:
+            day = parts[0]
+            month = parts[1]
+        year = datetime.date.today().year
+
+    return datetime.date(year, month, day)
+
 def return_datetime(date,time = False,minute = False,setting = "eu"):
     """Put a date and time string in the python datetime format."""
     if setting == "eu":            
