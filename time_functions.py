@@ -2,7 +2,7 @@
 import re
 import datetime
 
-def return_date(chars):
+def return_date(chars, docdate = False):
 
     if re.search('-', chars):
         parts = chars.split('-')
@@ -14,10 +14,12 @@ def return_date(chars):
             year = parts[0]
             month = parts[1]
             day = parts[2]
-        else parts[2] > 1000:
+        else:
             day = parts[0]
             month = parts[1]
-            year = parts[2] 
+            if parts[2] < 100: # length is two
+                parts[2] = 2000 + parts[2]
+            year = parts[2]
     elif len(parts) == 2:
         if parts[1] > 12:
             day = parts[1]
@@ -25,10 +27,17 @@ def return_date(chars):
         else:
             day = parts[0]
             month = parts[1]
-        year = datetime.date.today().year
+        if docdate:
+            year = docdate.year
+        else:
+            year = datetime.date.today().year
 
-    return datetime.date(year, month, day)
-
+    try:
+        outdate = datetime.date(year, month, day)
+        return outdate
+    except:
+        return False
+    
 def return_datetime(date,time = False,minute = False,setting = "eu"):
     """Put a date and time string in the python datetime format."""
     if setting == "eu":            
