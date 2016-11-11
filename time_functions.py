@@ -33,7 +33,7 @@ def return_date(chars, docdate = False):
             year = datetime.date.today().year
 
     try:
-        outdate = datetime.date(year, month, day)
+        outdate = datetime.datetime(year,month,day,0,0,0)
         return outdate
     except:
         return False
