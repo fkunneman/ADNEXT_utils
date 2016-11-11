@@ -2,7 +2,7 @@
 import re
 import datetime
 
-def return_date(chars):
+def return_date(chars, docdate = False):
 
     if re.search('-', chars):
         parts = chars.split('-')
@@ -17,7 +17,9 @@ def return_date(chars):
         else:
             day = parts[0]
             month = parts[1]
-            year = parts[2] 
+            if parts[2] < 100: # length is two
+                parts[2] = 2000 + parts[2]
+            year = parts[2]
     elif len(parts) == 2:
         if parts[1] > 12:
             day = parts[1]
