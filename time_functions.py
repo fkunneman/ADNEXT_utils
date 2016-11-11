@@ -14,7 +14,7 @@ def return_date(chars):
             year = parts[0]
             month = parts[1]
             day = parts[2]
-        else parts[2] > 1000:
+        else:
             day = parts[0]
             month = parts[1]
             year = parts[2] 
@@ -26,29 +26,28 @@ def return_date(chars):
             day = parts[0]
             month = parts[1]
         year = datetime.date.today().year
-
     return datetime.date(year, month, day)
 
-def return_datetime(date,time = False,minute = False,setting = "eu"):
+def return_datetime(datestr,timestr = False,minute = False,setting = "eu"):
     """Put a date and time string in the python datetime format."""
     if setting == "eu":            
         parse_date = re.compile(r"(\d{2})-(\d{2})-(\d{4})")
-        pds = parse_date.search(date).groups()
+        pds = parse_date.search(datestr).groups()
         date = [pds[2],pds[1],pds[0]]
     elif setting == "vs":
         parse_date = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
-        date = parse_date.search(date).groups(1)
+        date = parse_date.search(datestr).groups(1)
     elif setting == "twitter":
         month = {"Jan":1, "Feb":2, "Mar":3, "Apr":4, "May":5, "Jun":6, 
             "Jul":7, "Aug":8, "Sep":9, "Oct":10, "Nov":11, "Dec":12}
         parse_dt = re.compile(r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d+) " +
             r"(\d{2}:\d{2}:\d{2}) \+\d+ (\d{4})")
-        dtsearch = parse_dt.search(date).groups()
+        dtsearch = parse_dt.search(datestr).groups()
         date = [dtsearch[3],month[dtsearch[0]],dtsearch[1]]
         time = dtsearch[2]
     if time:
         parse_time = re.compile(r"^(\d{2}):(\d{2})")
-        timeparse = parse_time.search(time).groups(1)
+        timeparse = parse_time.search(timestr).groups(1)
         if minute:
             datetime_obj = datetime.datetime(int(date[0]),int(date[1]),int(date[2]),int(timeparse[0]),0,0)
         else:
